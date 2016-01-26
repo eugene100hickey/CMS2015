@@ -1,0 +1,40 @@
+---
+title: "Chromatography CA Marks"
+author: "Eugene"
+date: "21 December 2015"
+output: pdf_document
+---
+\large
+```{r echo=F, message=F, warning=F}
+library(knitr)
+library(plyr)
+library(dplyr)
+library(reshape2)
+
+setwd("C:/Academic/Science2/Chromatography & Measurement Systems/Exams/15-16")
+
+df = read.csv2("CMSMD_Grades.csv", sep=",")
+df= df[,-(4:6)]
+
+names = c("First", "Surname", "ID", "Q01Signals", 
+          "Q03Cables", "Q02Noise")
+colnames(df) = names
+
+for(n in 4:6){
+  df[,n] = as.numeric(as.character((df[,n])))
+}
+
+df[df=="-"] = 0
+df[is.na(df)] = 0
+
+df = mutate(df, Total.CA=(Q01Signals + Q03Cables + Q02Noise)/3)
+df$Total.CA = round(df$Total.CA, 1)
+
+df = subset(df, Total.CA > 10)
+
+row.names(df) = NULL
+
+df = df[, -(3:6)]
+kable(df)
+
+```
